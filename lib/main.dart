@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,9 +13,50 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  final questions = const [
+    {
+      'questionText': 'What\'s your favorite color ?',
+      'answers': [
+        {'text': "Black", 'score': 5},
+        {'text': "Red", 'score': 5},
+        {'text': 'Green', 'score': 5},
+        {'text': 'White', 'score': 5}
+      ]
+    },
+    {
+      'questionText': 'What\'s your favorite animal ?',
+      'answers': [
+        {'text': "Rabbit", 'score': 5},
+        {'text': "Snake", 'score': 5},
+        {'text': 'Elephant', 'score': 5},
+        {'text': 'Lion', 'score': 5}
+      ]
+    },
+    {
+      'questionText': 'What\'s your favorite instructor ?',
+      'answers': [
+        {'text': "Soheil", 'score': 5},
+        {'text': "Max", 'score': 5},
+        {'text': 'Akbar', 'score': 5},
+        {'text': 'Akbar 2', 'score': 5}
+      ]
+    },
+  ];
   var questionIndex = 0;
+  var totalScore = 0;
 
-  void answerQuestion() {
+  void resetQuiz() {
+    setState(() {
+      questionIndex = 0;
+      totalScore = 0;
+    });
+  }
+
+  void answerQuestion(int score) {
+    if (questionIndex >= questions.length) {
+      print("We have more questions!");
+    }
+    totalScore += score;
     setState(() {
       questionIndex = questionIndex + 1;
     });
@@ -24,35 +65,18 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      {
-        'questionText': 'What\'s your favorite color ?',
-        'answers': ["Black", "Red", 'Green', 'White']
-      },
-      {
-        'questionText': 'What\'s your favorite animal ?',
-        'answers': ["Rabbit", "Snake", 'Elephant', 'Lion']
-      },
-      {
-        'questionText': 'What\'s your favorite instructor ?',
-        'answers': ["Soheil", "Max", 'Akbar', 'Akbar 2']
-      },
-    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text("My Fisrt App"),
         ),
-        body: Column(
-          children: <Widget>[
-            Question(
-              questions[questionIndex]['questionText'] as String,
-            ),
-            ...(questions[questionIndex]['answers'] as List<String>)
-                .map((answer) => Answer(answerQuestion, answer))
-                .toList(),
-          ],
-        ),
+        body: questionIndex < questions.length
+            ? Quiz(
+                answerQuestion: answerQuestion,
+                questionIndex: questionIndex,
+                questions: questions,
+              )
+            : Result(totalScore, resetQuiz),
       ),
     );
   }
